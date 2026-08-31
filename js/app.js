@@ -57,8 +57,8 @@ class CustomizerApp {
     // 4. Check Security & Auto-Unlock for Google Sites Embed
     this.checkSecurityAndAutoUnlock();
 
-    // 5. Load EMGD24 by Default
-    this.loadModel('emgd24');
+    // 5. Load Mandrossa EMGK17 (100% Drawing Prototype) by Default
+    this.loadModel('mandrossa');
 
     // Hide loader
     setTimeout(() => {

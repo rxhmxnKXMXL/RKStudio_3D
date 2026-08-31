@@ -4,7 +4,8 @@
   "description": "A simple Streamlit app template for you to modify!",
   "main": "sw.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo Static 3D App Ready",
+    "start": "node -e \"console.log('RKStudio 3D Ready')\""
   },
   "repository": {
     "type": "git",
