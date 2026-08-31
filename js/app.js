@@ -57,8 +57,8 @@ class CustomizerApp {
     // 4. Check Security & Auto-Unlock for Google Sites Embed
     this.checkSecurityAndAutoUnlock();
 
-    // 5. Start with Clean Empty Stage (Waiting for 3D upload)
-    this.modelMgr.clearModel();
+    // 5. Load Official ENMAX EMGD24 HD Model by Default
+    this.loadModel('emgd24');
 
     // Hide loader
     setTimeout(() => {
@@ -373,15 +373,19 @@ class CustomizerApp {
      STANDARD EVENT BINDINGS
      ========================================================================= */
   bindModelTabs() {
-    const clearBtn = document.getElementById('btn-clear-scene');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        this.modelMgr.clearModel(() => {
-          this.populatePartsList([]);
-          this.showToast('Stage cleared. Ready for 3D model.');
-        });
+    document.querySelectorAll('.model-tab-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const model = e.currentTarget.dataset.model;
+        if (model === 'custom-upload') {
+          document.getElementById('custom-model-file-input').click();
+          return;
+        }
+
+        document.querySelectorAll('.model-tab-btn').forEach((b) => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.loadModel(model);
       });
-    }
+    });
   }
 
   bindCameraPresets() {
