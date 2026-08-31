@@ -57,8 +57,8 @@ class CustomizerApp {
     // 4. Check Security & Auto-Unlock for Google Sites Embed
     this.checkSecurityAndAutoUnlock();
 
-    // 5. Load Mandrossa EMGK17 (100% Drawing Prototype) by Default
-    this.loadModel('mandrossa');
+    // 5. Start with Clean Empty Stage (Waiting for 3D upload)
+    this.modelMgr.clearModel();
 
     // Hide loader
     setTimeout(() => {
@@ -373,19 +373,15 @@ class CustomizerApp {
      STANDARD EVENT BINDINGS
      ========================================================================= */
   bindModelTabs() {
-    document.querySelectorAll('.model-tab-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const model = e.currentTarget.dataset.model;
-        if (model === 'custom-upload') {
-          document.getElementById('custom-model-file-input').click();
-          return;
-        }
-
-        document.querySelectorAll('.model-tab-btn').forEach((b) => b.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        this.loadModel(model);
+    const clearBtn = document.getElementById('btn-clear-scene');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        this.modelMgr.clearModel(() => {
+          this.populatePartsList([]);
+          this.showToast('Stage cleared. Ready for 3D model.');
+        });
       });
-    });
+    }
   }
 
   bindCameraPresets() {
@@ -545,15 +541,13 @@ class CustomizerApp {
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-          this.showToast('Loading custom 3D model: ' + file.name);
+          this.showToast('Loading 3D model: ' + file.name);
           this.modelMgr.loadCustomGLTF(
             file,
             (parts) => {
               this.populatePartsList(parts);
               if (parts.length > 0) this.selectPart(parts[0]);
-              document.querySelectorAll('.model-tab-btn').forEach((b) => b.classList.remove('active'));
-              document.getElementById('tab-custom-upload').classList.add('active');
-              this.showToast(`Custom model loaded with ${parts.length} customizable components!`);
+              this.showToast(`3D model loaded with ${parts.length} customizable components!`);
             },
             (err) => {
               console.error(err);
@@ -565,25 +559,34 @@ class CustomizerApp {
     }
 
     const canvasContainer = document.getElementById('canvas-container');
-    if (canvasContainer) {
-      canvasContainer.addEventListener('dragover', (e) => e.preventDefault());
-      canvasContainer.addEventListener('drop', (e) => {
-        e.preventDefault();
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-          const file = e.dataTransfer.files[0];
-          if (file.name.match(/\.(glb|gltf)$/i)) {
-            this.showToast('Loading dropped 3D model: ' + file.name);
-            this.modelMgr.loadCustomGLTF(file, (parts) => {
-              this.populatePartsList(parts);
-              if (parts.length > 0) this.selectPart(parts[0]);
-              document.querySelectorAll('.model-tab-btn').forEach((b) => b.classList.remove('active'));
-              document.getElementById('tab-custom-upload').classList.add('active');
-              this.showToast(`Custom model loaded with ${parts.length} components!`);
-            });
+    const emptyOverlay = document.getElementById('empty-state-overlay');
+    
+    [canvasContainer, emptyOverlay, window].forEach((dropTarget) => {
+      if (dropTarget) {
+        dropTarget.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (emptyOverlay) emptyOverlay.classList.add('drag-over');
+        });
+        dropTarget.addEventListener('dragleave', () => {
+          if (emptyOverlay) emptyOverlay.classList.remove('drag-over');
+        });
+        dropTarget.addEventListener('drop', (e) => {
+          e.preventDefault();
+          if (emptyOverlay) emptyOverlay.classList.remove('drag-over');
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const file = e.dataTransfer.files[0];
+            if (file.name.match(/\.(glb|gltf)$/i)) {
+              this.showToast('Loading dropped 3D model: ' + file.name);
+              this.modelMgr.loadCustomGLTF(file, (parts) => {
+                this.populatePartsList(parts);
+                if (parts.length > 0) this.selectPart(parts[0]);
+                this.showToast(`3D model loaded with ${parts.length} components!`);
+              });
+            }
           }
-        }
-      });
-    }
+        });
+      }
+    });
   }
 
   bindModals() {

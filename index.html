@@ -46,6 +46,19 @@
     <!-- 3D WebGL Canvas Viewport -->
     <div id="canvas-container"></div>
 
+    <!-- Empty State Showroom Upload Card -->
+    <div id="empty-state-overlay">
+      <div class="empty-icon-circle">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      </div>
+      <h2 class="empty-title">Studio Stage Ready</h2>
+      <p class="empty-subtitle">Upload your 3D machinery (<strong>.glb</strong> / <strong>.gltf</strong>) or drag & drop files anywhere onto the stage.</p>
+      <label for="custom-model-file-input" class="btn-upload-prominent">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Select 3D File (.glb)
+      </label>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loader-overlay">
       <div class="spinner"></div>
@@ -61,35 +74,15 @@
         <h1 class="brand-title">Equipment <span>Customizer</span></h1>
       </div>
 
-      <!-- Equipment Model Switcher Tabs -->
+      <!-- Clean Upload & Workspace Actions -->
       <div class="model-selector-group">
-        <button class="model-tab-btn active" data-model="mandrossa" style="border-color: var(--accent-primary); color: #38bdf8; font-weight: 700;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="14" width="18" height="6" rx="1"/><path d="M5 14L14 3l4 4-9 11"/></svg>
-          ⭐ Mandrossa EMGK17 (100% Prototype)
-        </button>
-        <button class="model-tab-btn" data-model="emgd24">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          EMGD24 (400kg)
-        </button>
-        <button class="model-tab-btn" data-model="emgk16">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          EMGK16 (1000V)
-        </button>
-        <button class="model-tab-btn" data-model="em160zb4">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="20"/><path d="M6 20V6l8-3 6 4-6 2v11"/></svg>
-          EM160ZB4 (8-Ton Crane)
-        </button>
-        <button class="model-tab-btn" data-model="embl10a">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="18" r="3"/><path d="M10 18h11v-4H10z"/><line x1="10" y1="14" x2="19" y2="5"/></svg>
-          EMBL-10A Spider Boom
-        </button>
-        <button class="model-tab-btn" data-model="emgk23">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="14" width="18" height="6" rx="1"/><line x1="7" y1="14" x2="16" y2="4"/><line x1="16" y1="4" x2="20" y2="4"/></svg>
-          EMGK23 (800kg)
-        </button>
-        <button class="model-tab-btn" id="tab-custom-upload" data-model="custom-upload" style="color: var(--accent-primary);">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Upload 3D (.glb)
+        <label class="model-tab-btn active" for="custom-model-file-input" style="border-color: var(--accent-primary); color: #38bdf8; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload 3D CAD (.glb / .gltf)
+        </label>
+        <button class="model-tab-btn" id="btn-clear-scene" style="border-color: #ef4444; color: #f87171; display: none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Clear Model
         </button>
       </div>
       <input type="file" id="custom-model-file-input" accept=".glb,.gltf" style="display: none;" />

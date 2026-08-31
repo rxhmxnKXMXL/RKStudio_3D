@@ -16,7 +16,7 @@ class ModelManager {
   constructor(sceneController, materialManager) {
     this.sceneCtrl = sceneController;
     this.matMgr = materialManager;
-    this.currentModelKey = 'mandrossa';
+    this.currentModelKey = null;
     this.customizableParts = [];
     this.explodedParts = [];
     this.explosionProgress = 0;
@@ -25,48 +25,50 @@ class ModelManager {
     // Kinematic State & Pivot References
     this.kinematics = {
       slewDeg: 0,
-      elevationDeg: 22,
+      elevationDeg: 0,
       extensionPct: 0,
-      jibDeg: -35,
+      jibDeg: 0,
       isAutoDemoRunning: false,
       pivots: {}
     };
 
-    this.catalog = {
-      mandrossa: {
-        name: 'MSB-ENMAX EMGK17 Skylift (Isuzu NPR75UKH) - 100% Blueprint Prototype',
-        shortName: '⭐ Mandrossa EMGK17 (100% Drawing)',
-        primaryColor: '#f8fafc',
-      },
-      emgd24: {
-        name: 'ENMAX EMGD24 Negative Reach Platform (400kg)',
-        shortName: 'EMGD24 (400kg)',
-        primaryColor: '#f8fafc',
-      },
-      emgk16: {
-        name: 'ENMAX EMGK16 Insulated 1000V Utility Skylift',
-        shortName: 'EMGK16 (1000V)',
-        primaryColor: '#ea580c',
-      },
-      em160zb4: {
-        name: 'ENMAX EM160ZB4 Knuckle Crane (8-Ton Hook)',
-        shortName: 'EM160ZB4 (8-Ton Crane)',
-        primaryColor: '#dc2626',
-      },
-      embl10a: {
-        name: 'ENMAX EMBL-10A Trailer Articulating Spider Boom',
-        shortName: 'EMBL-10A Trailer Boom',
-        primaryColor: '#facc15',
-      },
-      emgk23: {
-        name: 'ENMAX EMGK23 Heavy Duty Platform (800kg)',
-        shortName: 'EMGK23 (800kg)',
-        primaryColor: '#ea580c',
-      }
-    };
+    this.catalog = {};
+  }
+
+  clearModel(onComplete) {
+    this.currentModelKey = null;
+    const group = this.sceneCtrl.currentModelGroup;
+
+    while (group.children.length > 0) {
+      const obj = group.children[0];
+      group.remove(obj);
+      if (obj.geometry) obj.geometry.dispose();
+    }
+    this.customizableParts = [];
+    this.explodedParts = [];
+    this.explosionProgress = 0;
+    this.kinematics.pivots = {};
+
+    const emptyOverlay = document.getElementById('empty-state-overlay');
+    if (emptyOverlay) emptyOverlay.classList.remove('hidden');
+
+    const clearBtn = document.getElementById('btn-clear-scene');
+    if (clearBtn) clearBtn.style.display = 'none';
+
+    if (this.sceneCtrl && this.sceneCtrl.controls) {
+      this.sceneCtrl.controls.target.set(0, 0.5, 0);
+      this.sceneCtrl.camera.position.set(6.0, 3.5, 6.5);
+      this.sceneCtrl.controls.update();
+    }
+
+    if (onComplete) onComplete([]);
   }
 
   loadModel(modelKey, onComplete) {
+    if (!modelKey || modelKey === 'empty') {
+      this.clearModel(onComplete);
+      return;
+    }
     this.currentModelKey = modelKey;
     const group = this.sceneCtrl.currentModelGroup;
 
@@ -80,45 +82,11 @@ class ModelManager {
     this.explosionProgress = 0;
     this.kinematics.pivots = {};
 
-    if (modelKey === 'tiller_skylift') {
-      this.loadHighPolyGLB('assets/models/tiller_aerial_truck.glb', onComplete);
-      return;
-    }
+    const emptyOverlay = document.getElementById('empty-state-overlay');
+    if (emptyOverlay) emptyOverlay.classList.add('hidden');
 
-    const rootGroup = new THREE.Group();
-
-    if (modelKey === 'mandrossa') {
-      this.buildMandrossaEMGK17BlueprintPrototype(rootGroup);
-    } else if (modelKey === 'emgd24') {
-      this.buildEMGD24NegativeReach(rootGroup);
-    } else if (modelKey === 'emgk16') {
-      this.buildEMGK16Insulated(rootGroup);
-    } else if (modelKey === 'em160zb4') {
-      this.buildEM160ZB4KnuckleCrane(rootGroup);
-    } else if (modelKey === 'embl10a') {
-      this.buildEMBL10ATrailerBoom(rootGroup);
-    } else if (modelKey === 'emgk23') {
-      this.buildEMGK23HeavyPlatform(rootGroup);
-    } else {
-      this.buildMandrossaEMGK17BlueprintPrototype(rootGroup);
-    }
-
-    group.add(rootGroup);
-    this.captureOriginalPositions(rootGroup);
-
-    // Initial Kinematics setup
-    this.setKinematics({
-      slew: 0,
-      elevation: modelKey === 'mandrossa' ? 22 : (modelKey === 'emgk16' ? 25 : 18),
-      extension: 0,
-      jib: modelKey === 'mandrossa' ? -35 : (modelKey === 'emgd24' ? -45 : 0)
-    });
-
-    if (this.sceneCtrl && this.sceneCtrl.controls) {
-      this.sceneCtrl.controls.target.set(0, 1.45, 0);
-      this.sceneCtrl.camera.position.set(7.2, 3.8, 7.6);
-      this.sceneCtrl.controls.update();
-    }
+    const clearBtn = document.getElementById('btn-clear-scene');
+    if (clearBtn) clearBtn.style.display = 'inline-flex';
 
     if (onComplete) onComplete(this.customizableParts);
   }
@@ -1502,6 +1470,12 @@ class ModelManager {
           });
 
           this.captureOriginalPositions(rootWrapper);
+
+          const emptyOverlay = document.getElementById('empty-state-overlay');
+          if (emptyOverlay) emptyOverlay.classList.add('hidden');
+
+          const clearBtn = document.getElementById('btn-clear-scene');
+          if (clearBtn) clearBtn.style.display = 'inline-flex';
 
           if (this.sceneCtrl && this.sceneCtrl.controls) {
             this.sceneCtrl.controls.target.set(0, 1.4, 0);

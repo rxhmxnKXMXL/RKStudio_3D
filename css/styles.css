@@ -1149,6 +1149,92 @@ body, html {
   transform: translateX(-50%) translateY(0);
 }
 
+/* Empty State Studio Dropzone Overlay */
+#empty-state-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 36px 44px;
+  background: rgba(18, 24, 38, 0.78);
+  border: 2px dashed rgba(56, 189, 248, 0.4);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  max-width: 480px;
+  width: 90%;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+#empty-state-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -46%) scale(0.96);
+}
+
+#empty-state-overlay:hover, #empty-state-overlay.drag-over {
+  border-color: var(--accent-primary);
+  background: rgba(18, 24, 38, 0.9);
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.3);
+}
+
+.empty-icon-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  margin-bottom: 18px;
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.empty-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+.btn-upload-prominent {
+  background: var(--accent-gradient);
+  color: #030712;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4);
+  transition: var(--transition);
+}
+
+.btn-upload-prominent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.6);
+}
+
 /* Mobile & Iframe Responsive Adaptations */
 @media (max-width: 768px) {
   #top-bar {
