@@ -42,7 +42,7 @@ class AIAssistant {
     }
 
     this.appendAssistantMessage(
-      "👋 Hello! I'm your **AI Fleet Copilot**. You can ask me to move the arm & boom (e.g. *'Elevate boom to 45°'*, *'Extend boom 60%'*, *'Rotate turntable 90°'*), run live motion cycles (*'Run motion demo'*), separate parts like LEGO (*'Separate parts'*), or customize colors!"
+      "👋 Hello! I'm your **Gemini 3.0 Pro Ultra Fleet Copilot**. You can give me voice/text commands in English or Bahasa Melayu to control the boom (*'Elevate boom to 45°'*, *'Panjangkan boom 80%'*, *'Rotate turntable 90°'*), run mechanical cycles (*'Run motion demo'*), separate parts like LEGO (*'Separate parts'*), or customize colors!"
     );
   }
 

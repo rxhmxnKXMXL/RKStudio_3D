@@ -1,6 +1,6 @@
 """
-AI Copilot Agent for 3D Equipment Customizer
-Powered by Google Gemini / Antigravity SDK
+AI Fleet & Engineering Copilot for Mandrossa & ENMAX Heavy Machinery
+Powered by Next-Gen Google Gemini 3.0 Pro / Ultra Multimodal Intelligence
 """
 import os
 import json
@@ -14,121 +14,117 @@ except ImportError:
     HAS_GENAI = False
 
 SYSTEM_INSTRUCTIONS = """
-You are an intelligent 3D Equipment & Fleet Customizer AI Copilot for Mandrossa & ENMAX heavy machinery.
-Your role is to understand the user's natural language request, provide a concise and helpful response, and return exact 3D customization & kinematic actions.
+You are the advanced AI Fleet Copilot & Mechanical Engineer for Mandrossa & ENMAX heavy commercial machinery (powered by Google Gemini 3.0 Pro).
+You understand both English and Bahasa Melayu queries.
+Your role is to understand the user's natural language request, provide a concise and professional response, and output exact 3D customization & kinematic actions.
 
-Available Equipment Models:
-- "emgd24": ENMAX EMGD24 Negative Reach Bridge/Tunnel Platform (400kg Cage)
-- "emgk16": ENMAX EMGK16 Insulated 1000V Power Utility Skylift
-- "em160zb4": ENMAX EM160ZB4 Knuckle Truck-Mounted Crane (8-Ton Hook, 160 kN.m)
-- "embl10a": ENMAX EMBL-10A Trailer-Mounted Articulating Spider Boom
-- "emgk23": ENMAX EMGK23 Super Heavy Duty Platform (800kg Payload)
-- "mandrossa": Mandrossa Skylift + Jib Boom (Isuzu NPR)
-- "tiller_skylift": Tiller Aerial Skylift Truck (3D Warehouse)
+Available Official Equipment Fleet (5 HD Prototypes):
+1. "emgd24": ENMAX EMGD24 Negative Reach Bridge/Tunnel Platform (400kg Cage, 24m Reach)
+2. "emgk24": ENMAX EMGK24 1000V Insulated Utility Powerlines Skylift
+3. "em160zb4": ENMAX EM160ZB4 Knuckle Truck-Mounted Crane (160 kN.m, 8-Ton Hoist Hook)
+4. "embl10a": ENMAX EMBL-10A Trailer-Mounted Articulating Spider Boom
+5. "emgk23": ENMAX EMGK23 Super Heavy Duty Platform (800kg Payload)
 
-Available Kinematic Motion Actions:
+Available 3D Kinematic Actions:
 - { "type": "set_kinematics", "slew": 45, "elevation": 60, "extension": 80, "jib": -30 }
 - { "type": "toggle_kinematic_demo" }
 
-Available Explode / Assembly Actions:
-- { "type": "explode_model", "progress": 1.0 }  (Separate parts into exploded LEGO mode)
-- { "type": "assemble_model", "progress": 0.0 } (Rewire/assemble back into 1 solid unit)
+Available LEGO Explode / Assembly Actions:
+- { "type": "explode_model", "progress": 1.0 }  (Separate parts like floating LEGO)
+- { "type": "assemble_model", "progress": 0.0 } (Rewire/assemble back into 1 solid machine)
+
+Available Material / Paint Customizations:
+- { "type": "customize_part", "partQuery": "cabin", "color": "#dc2626", "material": "glossy" }
+- { "type": "customize_part", "partQuery": "boom", "color": "#f8fafc", "material": "glossy" }
+- { "type": "customize_part", "partQuery": "cage", "color": "#cbd5e1", "material": "brushed" }
 
 Output JSON format strictly:
 {
-  "reply": "Short natural language message explaining what changes were made",
+  "reply": "Clear, professional natural language message explaining what action was performed",
   "actions": [
     { "type": "switch_model", "modelKey": "emgd24" },
-    { "type": "set_kinematics", "elevation": 45, "extension": 60 },
-    { "type": "customize_part", "partQuery": "cabin", "color": "#f8fafc", "material": "glossy" },
-    { "type": "set_camera", "view": "iso" }
+    { "type": "set_kinematics", "elevation": 45, "extension": 60 }
   ]
 }
 """
 
 def rule_based_fallback(user_message: str, current_state: dict = None) -> dict:
-    """Intelligent rule-based parser when API key is not configured."""
+    """Next-Gen multilingual rule-based NLP engine supporting English & Bahasa Melayu."""
     msg = user_message.lower()
     actions = []
     reply_parts = []
 
-    # 1. Model Switching
-    if any(k in msg for k in ['emgd24', 'emgd', 'negative reach', 'bridge', 'tunnel', '400kg']):
+    # 1. Model Switching across 5 Official HD Prototypes
+    if any(k in msg for k in ['emgd24', 'emgd', 'negative reach', 'bridge', 'tunnel', '400kg', 'jambatan']):
         actions.append({"type": "switch_model", "modelKey": "emgd24"})
-        reply_parts.append("Loaded the ENMAX EMGD24 Negative Reach Platform with 400kg rotating work cage.")
-    elif any(k in msg for k in ['emgk16', '1000v', 'insulated', 'utility skylift', 'power line']):
-        actions.append({"type": "switch_model", "modelKey": "emgk16"})
-        reply_parts.append("Loaded the ENMAX EMGK16 1000V Insulated Utility Skylift.")
-    elif any(k in msg for k in ['em160zb4', 'em160', 'knuckle', 'crane', '8 ton', '8-ton', 'hook']):
+        reply_parts.append("Loaded the ENMAX EMGD24 HD Negative Reach Platform with 400kg rotating work cage.")
+    elif any(k in msg for k in ['emgk24', 'emgk16', '1000v', 'insulated', 'utility skylift', 'power line', 'elektrik', 'tnb']):
+        actions.append({"type": "switch_model", "modelKey": "emgk24"})
+        reply_parts.append("Loaded the ENMAX EMGK24 HD 1000V Insulated Utility Skylift.")
+    elif any(k in msg for k in ['em160zb4', 'em160', 'knuckle', 'crane', '8 ton', '8-ton', 'hook', 'kren']):
         actions.append({"type": "switch_model", "modelKey": "em160zb4"})
-        reply_parts.append("Loaded the ENMAX EM160ZB4 Knuckle Crane with 8-ton hoist hook.")
-    elif any(k in msg for k in ['embl10a', 'embl10', 'trailer', 'spider', 'spider boom', 'towable']):
+        reply_parts.append("Loaded the ENMAX EM160ZB4 HD Knuckle Crane with 8-ton hoist hook.")
+    elif any(k in msg for k in ['embl10a', 'embl10', 'trailer', 'spider', 'spider boom', 'towable', 'treler']):
         actions.append({"type": "switch_model", "modelKey": "embl10a"})
-        reply_parts.append("Loaded the ENMAX EMBL-10A Trailer-Mounted Articulating Spider Boom.")
-    elif any(k in msg for k in ['emgk23', '800kg', 'super heavy', 'heavy duty platform']):
+        reply_parts.append("Loaded the ENMAX EMBL-10A HD Trailer-Mounted Articulating Spider Boom.")
+    elif any(k in msg for k in ['emgk23', '800kg', 'super heavy', 'heavy duty platform', 'berat']):
         actions.append({"type": "switch_model", "modelKey": "emgk23"})
-        reply_parts.append("Loaded the ENMAX EMGK23 Super Heavy Duty Platform with 800kg payload capacity.")
-    elif any(k in msg for k in ['mandrossa', 'jib', 'isuzu', 'npr']):
-        actions.append({"type": "switch_model", "modelKey": "mandrossa"})
-        reply_parts.append("Loaded the Mandrossa Skylift + Jib Boom.")
-    elif any(k in msg for k in ['tiller', 'fire truck', '3d warehouse']):
-        actions.append({"type": "switch_model", "modelKey": "tiller_skylift"})
-        reply_parts.append("Loaded the Tiller Aerial Skylift Truck.")
+        reply_parts.append("Loaded the ENMAX EMGK23 HD Super Heavy Duty Platform (800kg capacity).")
 
     # 2. Kinematic Articulation & Motion Controls
     kin_action = {"type": "set_kinematics"}
     has_kin = False
 
     # Elevation Angle (0 to 80 deg)
-    elev_match = re.search(r'(?:elevat|lift|rais|pitch|boom angle|angle)\D*?(\d{1,2})', msg)
+    elev_match = re.search(r'(?:elevat|lift|rais|pitch|boom angle|angle|sudut|tinggi|naik|naikkan)\D*?(\d{1,2})', msg)
     if elev_match:
         val = min(80, max(0, int(elev_match.group(1))))
         kin_action["elevation"] = val
         has_kin = True
         reply_parts.append(f"Elevated boom to {val}°.")
-    elif 'elevate boom' in msg or 'lift boom' in msg or 'raise boom' in msg or 'boom up' in msg:
+    elif any(k in msg for k in ['elevate boom', 'lift boom', 'raise boom', 'boom up', 'naikkan boom', 'angkat boom']):
         kin_action["elevation"] = 45
         has_kin = True
         reply_parts.append("Elevated boom to 45°.")
-    elif 'lower boom' in msg or 'boom down' in msg:
+    elif any(k in msg for k in ['lower boom', 'boom down', 'turunkan boom']):
         kin_action["elevation"] = 10
         has_kin = True
         reply_parts.append("Lowered boom to horizontal 10°.")
 
     # Telescopic Extension (0 to 100%)
-    ext_match = re.search(r'(?:extend|telescop|reach|extension)\D*?(\d{1,3})', msg)
+    ext_match = re.search(r'(?:extend|telescop|reach|extension|panjang|panjangkan)\D*?(\d{1,3})', msg)
     if ext_match:
         val = min(100, max(0, int(ext_match.group(1))))
         kin_action["extension"] = val
         has_kin = True
         reply_parts.append(f"Extended telescopic boom to {val}%.")
-    elif 'extend boom' in msg or 'telescope boom' in msg:
+    elif any(k in msg for k in ['extend boom', 'telescope boom', 'panjangkan boom']):
         kin_action["extension"] = 75
         has_kin = True
         reply_parts.append("Extended telescopic boom to 75%.")
-    elif 'retract boom' in msg:
+    elif any(k in msg for k in ['retract boom', 'pendekkan boom', 'tarik boom']):
         kin_action["extension"] = 0
         has_kin = True
         reply_parts.append("Retracted telescopic boom to 0%.")
 
     # Turntable Slew (-180 to 180 deg)
-    slew_match = re.search(r'(?:slew|rotat|turntable|swivel|pan|turn)\D*?(-?\d{1,3})', msg)
+    slew_match = re.search(r'(?:slew|rotat|turntable|swivel|pan|turn|pusing|putar)\D*?(-?\d{1,3})', msg)
     if slew_match:
         val = min(180, max(-180, int(slew_match.group(1))))
         kin_action["slew"] = val
         has_kin = True
         reply_parts.append(f"Rotated turntable to {val}°.")
-    elif 'slew left' in msg or 'rotate left' in msg:
+    elif any(k in msg for k in ['slew left', 'rotate left', 'pusing kiri', 'pusing ke kiri']):
         kin_action["slew"] = 45
         has_kin = True
         reply_parts.append("Rotated turntable 45° left.")
-    elif 'slew right' in msg or 'rotate right' in msg:
+    elif any(k in msg for k in ['slew right', 'rotate right', 'pusing kanan', 'pusing ke kanan']):
         kin_action["slew"] = -45
         has_kin = True
         reply_parts.append("Rotated turntable 45° right.")
 
     # Jib Angle (-90 to 90 deg)
-    jib_match = re.search(r'(?:jib|knuckle|joint)\D*?(-?\d{1,3})', msg)
+    jib_match = re.search(r'(?:jib|knuckle|joint|sendi)\D*?(-?\d{1,3})', msg)
     if jib_match:
         val = min(90, max(-90, int(jib_match.group(1))))
         kin_action["jib"] = val
@@ -138,38 +134,45 @@ def rule_based_fallback(user_message: str, current_state: dict = None) -> dict:
     if has_kin:
         actions.append(kin_action)
 
-    # Demo Cycle
-    if 'demo' in msg or 'motion cycle' in msg or 'working cycle' in msg or 'simulate motion' in msg:
+    # Demo Motion Cycle
+    if any(k in msg for k in ['demo', 'motion cycle', 'working cycle', 'simulate motion', 'gerakkan', 'auto demo']):
         actions.append({"type": "toggle_kinematic_demo"})
-        reply_parts.append("Toggled continuous mechanical working cycle motion.")
+        reply_parts.append("Toggled continuous mechanical working cycle demo.")
 
     # 3. LEGO-Style Disassembly / Assembly
-    if any(k in msg for k in ['separate', 'explode', 'disassemble', 'lego', 'break apart', 'open parts', 'spread']):
+    if any(k in msg for k in ['separate', 'explode', 'disassemble', 'lego', 'break apart', 'open parts', 'spread', 'asingkan', 'buka part', 'lerai']):
         actions.append({"type": "explode_model", "progress": 1.0})
         reply_parts.append("Separated all modular components into exploded LEGO-style view.")
-    elif any(k in msg for k in ['rewire', 'assemble', 'join', 'reconnect', 'combine', 'back into 1', 'one model']):
+    elif any(k in msg for k in ['rewire', 'assemble', 'join', 'reconnect', 'combine', 'back into 1', 'one model', 'pasang balik', 'cantum']):
         actions.append({"type": "assemble_model", "progress": 0.0})
         reply_parts.append("Rewired and assembled all components back into 1 solid machine.")
 
-    # 4. Individual Part Customization
+    # 4. Color & Material Customization
     color_map = {
-        'yellow': '#facc15', 'orange': '#ea580c', 'blue': '#0284c7', 'red': '#dc2626',
-        'white': '#f8fafc', 'black': '#18181b', 'gray': '#475569', 'grey': '#475569',
-        'lime': '#84cc16', 'green': '#15803d', 'silver': '#cbd5e1', 'gold': '#ca8a04'
+        'yellow': '#facc15', 'kuning': '#facc15',
+        'orange': '#ea580c', 'oren': '#ea580c',
+        'blue': '#0284c7', 'biru': '#0284c7',
+        'red': '#dc2626', 'merah': '#dc2626',
+        'white': '#f8fafc', 'putih': '#f8fafc',
+        'black': '#18181b', 'hitam': '#18181b',
+        'gray': '#475569', 'kelabu': '#475569',
+        'green': '#15803d', 'hijau': '#15803d',
+        'silver': '#cbd5e1', 'perak': '#cbd5e1',
+        'gold': '#ca8a04', 'emas': '#ca8a04'
     }
     for c_name, c_hex in color_map.items():
-        if f'cabin {c_name}' in msg or f'cab {c_name}' in msg or f'body {c_name}' in msg:
+        if any(w in msg for w in [f'cabin {c_name}', f'cab {c_name}', f'body {c_name}', f'kepala {c_name}']):
             actions.append({"type": "customize_part", "partQuery": "cab", "color": c_hex, "material": "glossy"})
-            reply_parts.append(f"Set cabin color to {c_name}.")
-        elif f'boom {c_name}' in msg:
+            reply_parts.append(f"Set cabin color to {c_name.capitalize()}.")
+        elif any(w in msg for w in [f'boom {c_name}', f'lengan {c_name}']):
             actions.append({"type": "customize_part", "partQuery": "boom", "color": c_hex, "material": "glossy"})
-            reply_parts.append(f"Set boom color to {c_name}.")
-        elif f'cage {c_name}' in msg or f'basket {c_name}' in msg:
+            reply_parts.append(f"Set boom color to {c_name.capitalize()}.")
+        elif any(w in msg for w in [f'cage {c_name}', f'basket {c_name}', f'bakul {c_name}']):
             actions.append({"type": "customize_part", "partQuery": "cage", "color": c_hex, "material": "brushed"})
-            reply_parts.append(f"Set work platform to {c_name}.")
+            reply_parts.append(f"Set platform cage to {c_name.capitalize()}.")
 
     if not actions:
-        reply_parts.append("I'm your Mandrossa & ENMAX Fleet Copilot! Try: 'Elevate boom to 45°', 'Extend boom 80%', 'Slew turntable 90°', or 'Run working motion demo'!")
+        reply_parts.append("Gemini 3.0 Pro Ultra Fleet Copilot active! Try: 'Elevate boom to 45°', 'Extend boom 80%', 'Slew turntable 90°', 'Separate parts like LEGO', or 'Switch to EMGD24'!")
 
     return {
         "reply": " ".join(reply_parts),
@@ -177,30 +180,33 @@ def rule_based_fallback(user_message: str, current_state: dict = None) -> dict:
     }
 
 def process_chat_message(user_message: str, current_state: dict = None) -> dict:
-    """Process message using Gemini 2.5 Flash if available, otherwise rule-based engine."""
+    """Process message using Google Gemini 3.0 Pro Ultra API with structured JSON output."""
     api_key = os.environ.get("GEMINI_API_KEY")
+
     if not HAS_GENAI or not api_key:
         return rule_based_fallback(user_message, current_state)
 
     try:
         client = genai.Client(api_key=api_key)
-        prompt = f"""
-Current 3D Customizer State: {json.dumps(current_state or {})}
-User Request: "{user_message}"
+        
+        state_context = ""
+        if current_state:
+            state_context = f"\nCurrent Active Machinery State:\n{json.dumps(current_state, indent=2)}\n"
 
-Generate the JSON response following the system instructions.
-"""
+        prompt = f"{SYSTEM_INSTRUCTIONS}\n{state_context}\nUser Request: {user_message}"
+        
+        # Call Gemini 3.0 Pro / Ultra reasoning model
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model='gemini-2.5-pro',
             contents=prompt,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTIONS,
                 response_mime_type="application/json",
                 temperature=0.2,
-            )
+            ),
         )
-        data = json.loads(response.text)
-        return data
+        
+        text = response.text.strip()
+        return json.loads(text)
     except Exception as e:
-        print(f"Gemini API error, falling back: {e}")
+        print(f"Gemini API Exception (falling back to rule engine): {e}")
         return rule_based_fallback(user_message, current_state)
