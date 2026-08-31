@@ -62,12 +62,6 @@ class ModelManager {
         name: 'ENMAX EMGK23 Heavy Duty Platform (800kg)',
         shortName: 'EMGK23 (800kg)',
         primaryColor: '#ea580c',
-      },
-      tiller_skylift: {
-        name: 'Tiller Aerial Skylift Truck (3D Warehouse)',
-        shortName: 'Tiller Aerial Truck',
-        primaryColor: '#dc2626',
-        file: 'assets/models/tiller_aerial_truck.glb',
       }
     };
   }
