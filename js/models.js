@@ -1,11 +1,6 @@
 /**
  * MANDROSSA & ENMAX OFFICIAL 5-PROTOTYPE 3D ENGINE
- * Loaded directly from official CAD assets:
- * 1. ENMAX EMGD24 HD Negative Reach Platform (400kg)
- * 2. ENMAX EMGK24 HD Insulated Utility Skylift
- * 3. ENMAX EM160ZB4 HD Knuckle Crane (8-Ton Hook)
- * 4. ENMAX EMBL10A HD Trailer Articulating Spider Boom
- * 5. ENMAX EMGK23 HD Heavy Duty Platform (800kg)
+ * High-Fidelity PBR Rendering, Automatic Node Materialization & Kinematics
  */
 
 class ModelManager {
@@ -21,9 +16,9 @@ class ModelManager {
     // Kinematic State & Pivot References
     this.kinematics = {
       slewDeg: 0,
-      elevationDeg: 15,
+      elevationDeg: 0,
       extensionPct: 0,
-      jibDeg: -20,
+      jibDeg: 0,
       isAutoDemoRunning: false,
       pivots: {}
     };
@@ -33,41 +28,36 @@ class ModelManager {
         name: 'ENMAX EMGD24 Negative Reach Platform (400kg)',
         shortName: 'EMGD24 (400kg)',
         file: 'assets/models/ENMAX_EMGD24_HD.glb',
-        primaryColor: '#f8fafc',
-        defaultElev: 18,
-        defaultJib: -35
+        primaryColor: '#0284c7', // Vibrant DBKL Sky Blue / Cyan
+        accentColor: '#38bdf8'
       },
       emgk24: {
         name: 'ENMAX EMGK24 Insulated Utility Skylift (1000V)',
         shortName: 'EMGK24 (1000V)',
         file: 'assets/models/ENMAX_EMGK24_HD.glb',
-        primaryColor: '#ea580c',
-        defaultElev: 22,
-        defaultJib: 0
+        primaryColor: '#ea580c', // TNB Utility Orange
+        accentColor: '#f97316'
       },
       em160zb4: {
         name: 'ENMAX EM160ZB4 Knuckle Crane (8-Ton Hook)',
         shortName: 'EM160ZB4 (8-Ton Crane)',
         file: 'assets/models/ENMAX_EM160ZB4_HD.glb',
-        primaryColor: '#dc2626',
-        defaultElev: 25,
-        defaultJib: -25
+        primaryColor: '#dc2626', // Crimson Red
+        accentColor: '#ef4444'
       },
       embl10a: {
         name: 'ENMAX EMBL-10A Trailer Articulating Spider Boom',
         shortName: 'EMBL-10A Trailer Boom',
         file: 'assets/models/ENMAX_EMBL10A_HD.glb',
-        primaryColor: '#facc15',
-        defaultElev: 20,
-        defaultJib: 0
+        primaryColor: '#eab308', // High-Vis Industrial Yellow
+        accentColor: '#facc15'
       },
       emgk23: {
         name: 'ENMAX EMGK23 Heavy Duty Platform (800kg)',
         shortName: 'EMGK23 (800kg)',
         file: 'assets/models/ENMAX_EMGK23_HD.glb',
-        primaryColor: '#ea580c',
-        defaultElev: 15,
-        defaultJib: 0
+        primaryColor: '#f97316', // Heavy Duty Orange
+        accentColor: '#fb923c'
       }
     };
   }
@@ -93,7 +83,7 @@ class ModelManager {
     if (clearBtn) clearBtn.style.display = 'none';
 
     if (this.sceneCtrl && this.sceneCtrl.controls) {
-      this.sceneCtrl.controls.target.set(0, 1.0, 0);
+      this.sceneCtrl.controls.target.set(0, 1.2, 0);
       this.sceneCtrl.camera.position.set(7.5, 4.0, 8.0);
       this.sceneCtrl.controls.update();
     }
@@ -156,20 +146,20 @@ class ModelManager {
 
         this.captureOriginalPositions(rootWrapper);
 
-        // 3. Reset Kinematics
+        // 3. Reset Kinematics (Keep CAD Resting Geometry Assembled)
         this.setKinematics({
           slew: 0,
-          elevation: item.defaultElev || 18,
+          elevation: 0,
           extension: 0,
-          jib: item.defaultJib || 0
+          jib: 0
         });
 
         // 4. Position Camera
         if (this.sceneCtrl && this.sceneCtrl.controls) {
           const maxDim = Math.max(size.x, size.y, size.z);
-          const camDist = Math.max(6.5, maxDim * 1.1);
-          this.sceneCtrl.controls.target.set(0, size.y * 0.35, 0);
-          this.sceneCtrl.camera.position.set(camDist * 0.85, camDist * 0.55, camDist * 0.95);
+          const camDist = Math.max(6.5, maxDim * 1.15);
+          this.sceneCtrl.controls.target.set(0, size.y * 0.38, 0);
+          this.sceneCtrl.camera.position.set(camDist * 0.85, camDist * 0.52, camDist * 0.95);
           this.sceneCtrl.controls.update();
         }
 
@@ -187,18 +177,23 @@ class ModelManager {
     let partIndex = 1;
 
     loadedScene.traverse((child) => {
-      // Find Kinematic Nodes
-      const name = (child.name || '').toLowerCase();
+      // Get human-friendly node name from parent or mesh
+      const rawName = (child.parent && child.parent.name && !child.parent.name.startsWith('world') && !child.parent.name.startsWith('Scene'))
+        ? child.parent.name
+        : (child.name || '');
+      
+      const lower = rawName.toLowerCase();
 
-      if (name.includes('slew') || name === 'slew') {
+      // Find Kinematic Nodes
+      if (lower === 'slew' || lower.includes('slew')) {
         this.kinematics.pivots.slew = child;
-      } else if (name.includes('boom0') || name === 'boom0') {
+      } else if (lower === 'boom0' || lower.includes('boom0')) {
         this.kinematics.pivots.elevation = child;
-      } else if (name.includes('boom1') || name === 'boom1') {
+      } else if (lower === 'boom1' || lower.includes('boom1')) {
         this.kinematics.pivots.extension = child;
-      } else if (name.includes('boom2') || name === 'boom2') {
+      } else if (lower === 'boom2' || lower.includes('boom2')) {
         this.kinematics.pivots.jib = child;
-      } else if (name.includes('basket') || name.includes('cage') || name === 'basket') {
+      } else if (lower.includes('basket') || lower.includes('cage')) {
         if (!this.kinematics.pivots.basket) {
           this.kinematics.pivots.basket = child;
         }
@@ -209,30 +204,32 @@ class ModelManager {
         child.receiveShadow = true;
 
         // Determine Human-Friendly Part Name
-        const partName = this.formatPartName(child.name, partIndex++);
+        const partName = this.formatPartName(rawName, partIndex++);
 
         // Assign PBR Material based on component role
-        const { preset, color } = this.determineComponentMaterial(child.name, catalogItem.primaryColor);
+        const { preset, color } = this.determineComponentMaterial(rawName, catalogItem.primaryColor);
         const pbrMat = this.matMgr.createMaterial(preset, color);
         child.material = pbrMat;
 
-        // Assign LEGO Exploded Vector
+        // Assign LEGO Exploded Vector based on node name and position
         const worldPos = new THREE.Vector3();
         child.getWorldPosition(worldPos);
         
         let explodeVec = new THREE.Vector3(0, 0, 0);
-        if (name.includes('cab')) {
-          explodeVec = new THREE.Vector3(2.5, 0.4, 0);
-        } else if (name.includes('wheel') || name.includes('rim')) {
-          explodeVec = new THREE.Vector3(0, 0, worldPos.z > 0 ? 1.8 : -1.8);
-        } else if (name.includes('boom') || name.includes('cable')) {
-          explodeVec = new THREE.Vector3(0, 1.8, 0);
-        } else if (name.includes('basket') || name.includes('rail')) {
-          explodeVec = new THREE.Vector3(-2.2, 1.2, 0);
-        } else if (name.includes('leg') || name.includes('pad') || name.includes('cross')) {
-          explodeVec = new THREE.Vector3(worldPos.x > 0 ? 1.2 : -1.2, 0, worldPos.z > 0 ? 2.0 : -2.0);
+        if (lower.includes('cab')) {
+          explodeVec = new THREE.Vector3(3.2, 0.5, 0);
+        } else if (lower.includes('wheel') || lower.includes('rim')) {
+          explodeVec = new THREE.Vector3(0, 0, worldPos.z > 0 ? 2.0 : -2.0);
+        } else if (lower.includes('boom') || lower.includes('cable')) {
+          explodeVec = new THREE.Vector3(0, 2.2, 0);
+        } else if (lower.includes('basket') || lower.includes('rail')) {
+          explodeVec = new THREE.Vector3(-3.0, 1.5, 0);
+        } else if (lower.includes('leg') || lower.includes('pad') || lower.includes('cross')) {
+          explodeVec = new THREE.Vector3(worldPos.x > 0 ? 1.5 : -1.5, 0, worldPos.z > 0 ? 2.2 : -2.2);
+        } else if (lower.includes('ped') || lower.includes('slew')) {
+          explodeVec = new THREE.Vector3(0, 1.2, 0);
         } else {
-          explodeVec = new THREE.Vector3(0, 0.6, 0);
+          explodeVec = new THREE.Vector3(0, 0.8, 0);
         }
         child.userData.explodeVector = explodeVec;
 
@@ -244,27 +241,27 @@ class ModelManager {
   formatPartName(rawName, fallbackIdx) {
     if (!rawName) return `Component ${fallbackIdx}`;
     const clean = rawName.toLowerCase();
-    if (clean.includes('cab')) return 'Commercial Truck Cabin';
-    if (clean.includes('chassis')) return 'Chassis Frame Rail';
-    if (clean.includes('body')) return 'Subframe & Catwalk Deck';
-    if (clean.includes('wheel')) return 'Heavy Commercial Wheel';
-    if (clean.includes('rim')) return 'Steel Wheel Rim & Lugs';
+    if (clean.includes('cab')) return 'Truck Cabin & Bodywork';
+    if (clean.includes('chassis')) return 'Heavy Subframe Rails';
+    if (clean.includes('body')) return 'Catwalk Deck & Body Panels';
+    if (clean.includes('wheel')) return 'Commercial Truck Wheel';
+    if (clean.includes('rim')) return 'Steel Wheel Rim (Chrome)';
     if (clean.includes('slew')) return 'Turntable Slew Pedestal';
-    if (clean.includes('ped')) return 'Turntable Upright Column';
+    if (clean.includes('ped')) return 'Turntable Column Uprights';
     if (clean.includes('boom0')) return 'Telescopic Main Boom (Stage 1)';
-    if (clean.includes('boom1')) return 'Extension Boom (Stage 2)';
-    if (clean.includes('boom2')) return 'Articulated Jib Arm (Stage 3)';
-    if (clean.includes('boom3')) return 'Telescopic Jib (Stage 4)';
+    if (clean.includes('boom1')) return 'Inner Telescopic Boom (Stage 2)';
+    if (clean.includes('boom2')) return 'Articulated Negative Jib (Stage 3)';
+    if (clean.includes('boom3')) return 'Knuckle Crane Extension (Stage 4)';
     if (clean.includes('basket_floor')) return 'Platform Floor & Toe-Board';
-    if (clean.includes('basket_back')) return 'Platform Rear Guard';
-    if (clean.includes('rail')) return 'Tubular Safety Railing';
+    if (clean.includes('basket_back')) return 'Platform Safety Guard';
+    if (clean.includes('rail')) return 'Tubular Safety Railings';
     if (clean.includes('basket')) return 'Work Platform Basket';
     if (clean.includes('cable')) return '8-Ton Crane Hoist Cable & Hook';
     if (clean.includes('leg')) return 'Hydraulic Outrigger Leg';
     if (clean.includes('pad')) return 'Outrigger Ground Swivel Pad';
-    if (clean.includes('cross')) return 'Outrigger Crossbeam';
-    if (clean.includes('drawbar')) return 'Trailer Tow Drawbar';
-    if (clean.includes('frame')) return 'Trailer Frame Chassis';
+    if (clean.includes('cross')) return 'Outrigger Crossbeam Beam';
+    if (clean.includes('drawbar')) return 'Trailer Tow Drawbar Hitch';
+    if (clean.includes('frame')) return 'Road Trailer Frame Chassis';
     return rawName.charAt(0).toUpperCase() + rawName.slice(1);
   }
 
@@ -272,24 +269,31 @@ class ModelManager {
     if (!rawName) return { preset: 'glossy', color: primaryColorHex };
     const clean = rawName.toLowerCase();
 
+    // 1. Cab & Body Panels -> High-Gloss Automotive Clearcoat (Primary Brand Color)
     if (clean.includes('cab') || clean.includes('body') || clean.includes('frame')) {
       return { preset: 'glossy', color: primaryColorHex };
     }
+    // 2. Main Boom Sections -> Crisp Glossy White with High Specular
     if (clean.includes('boom0') || clean.includes('boom1')) {
       return { preset: 'glossy', color: '#f8fafc' };
     }
+    // 3. Jib, Pedestal, Slew -> Accent Brand Color
     if (clean.includes('boom2') || clean.includes('boom3') || clean.includes('slew') || clean.includes('ped')) {
       return { preset: 'glossy', color: primaryColorHex };
     }
+    // 4. Rubber Wheels -> Deep Textured Rubber
     if (clean.includes('wheel')) {
       return { preset: 'tire', color: '#141416' };
     }
+    // 5. Rims & Cables -> Gleaming Hydraulic Chrome
     if (clean.includes('rim') || clean.includes('cable')) {
       return { preset: 'chrome', color: '#ffffff' };
     }
+    // 6. Undercarriage Chassis, Legs, Pads -> Structural Dark Charcoal
     if (clean.includes('chassis') || clean.includes('leg') || clean.includes('pad') || clean.includes('cross')) {
-      return { preset: 'matte', color: '#18181b' };
+      return { preset: 'matte', color: '#1e2430' };
     }
+    // 7. Work Platform & Railings -> Brushed Aluminum / Galvanized Steel
     if (clean.includes('basket') || clean.includes('rail')) {
       return { preset: 'brushed', color: '#cbd5e1' };
     }

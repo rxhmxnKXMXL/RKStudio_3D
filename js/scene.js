@@ -200,9 +200,14 @@ class SceneController {
     this.lights.rim = rimLight;
 
     // 4. Undercarriage Bounce Light (Prevents black shadows under chassis)
-    const hemiLight = new THREE.HemisphereLight('#f1f5f9', '#0f172a', 0.65);
+    const hemiLight = new THREE.HemisphereLight('#f1f5f9', '#1e293b', 0.85);
     this.scene.add(hemiLight);
     this.lights.hemi = hemiLight;
+
+    // 5. Global Ambient Light (Guarantees bright visibility across all mobile & web GPUs)
+    const ambientLight = new THREE.AmbientLight('#ffffff', 0.9);
+    this.scene.add(ambientLight);
+    this.lights.ambient = ambientLight;
   }
 
   /* =========================================================================
