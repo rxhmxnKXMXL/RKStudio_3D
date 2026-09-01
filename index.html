@@ -509,18 +509,18 @@
     <div id="toast"></div>
   </div>
 
-  <!-- Custom Scripts -->
-  <script src="js/materials.js"></script>
-  <script src="js/scene.js"></script>
-  <script src="js/models.js"></script>
-  <script src="js/embed.js"></script>
-  <script src="js/ai_assistant.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Custom Scripts with Cache-Busting Version Query -->
+  <script src="js/materials.js?v=3.1.0"></script>
+  <script src="js/scene.js?v=3.1.0"></script>
+  <script src="js/models.js?v=3.1.0"></script>
+  <script src="js/embed.js?v=3.1.0"></script>
+  <script src="js/ai_assistant.js?v=3.1.0"></script>
+  <script src="js/app.js?v=3.1.0"></script>
 
   <!-- PWA Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js?v=3.1.0').catch(() => {});
     }
 
     // PWA Install Prompt Handler
@@ -536,6 +536,14 @@
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then(() => {
               deferredPrompt = null;
+              installBtn.style.display = 'none';
+            });
+          }
+        });
+      }
+    });
+  </script>
+
   <!-- Vercel Speed Insights & Analytics -->
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
